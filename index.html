@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список товаров</title>
+    <style>
+        #app {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 150px;
+        }
+
+        .product-item {
+            border: 10px solid #000000;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .product-buttons {
+            display: flex;
+        }
+
+        .product-buttons button {
+            margin: 0 5px;
+        }
+
+        .delete-button {
+            background-color: #774444;
+            color: #ffffff;
+            padding: 1px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        const data = [
+            { id: 1, name: 'Велосипед', price: 1000, count: 1 },
+            { id: 2, name: 'Самокат', price: 3500, count: 1 },
+            { id: 3, name: 'Ролики', price: 2000, count: 1 },
+            { id: 4, name: 'Сноуборд', price: 15000, count: 1 }
+        ];
+
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+
+            data.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.classList.add('product-item');
+                productItem.innerHTML = `
+                    <div>${product.name}</div>
+                    <div>Цена: ₽<span id="price-${product.id}">${product.price * product.count}</span></div>
+                    <div>Количество: <span id="count-${product.id}">${product.count}</span></div>
+                    <div class="product-buttons">
+                        <button onclick="decrement(${product.id})">-</button>
+                        <button onclick="increment(${product.id})">+</button>
+                    </div>
+                    <div class="delete-button" ondblclick="deleteProduct(${product.id})">Удалить товар</div>
+                `;
+                app.appendChild(productItem);
+            });
+        }
+
+        function updateCountAndPrice(id, newCount) {
+            const product = data.find(item => item.id === id);
+            if (product) {
+                if (newCount >= 0 && newCount <= 25) {
+                    product.count = newCount;
+                    const priceElement = document.getElementById(`price-${id}`);
+                    priceElement.textContent = product.price * newCount;
+                    const countElement = document.getElementById(`count-${id}`);
+                    countElement.textContent = newCount;
+                }
+            }
+        }
+
+        function increment(id) {
+            const product = data.find(item => item.id === id);
+            if (product && product.count < 25) {
+                updateCountAndPrice(id, product.count + 1);
+            }
+        }
+
+        function decrement(id) {
+            const product = data.find(item => item.id === id);
+            if (product && product.count > 0) {
+                updateCountAndPrice(id, product.count - 1);
+            }
+        }
+
+        function deleteProduct(id) {
+            const index = data.findIndex(item => item.id === id);
+            if (index !== -1) {
+                data.splice(index, 1);
+                render();
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
